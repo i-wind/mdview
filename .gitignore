@@ -1,0 +1,6 @@
+*~
+*.o
+*.user
+Makefile
+mdview
+moc_*.cpp

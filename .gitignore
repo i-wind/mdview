@@ -4,3 +4,4 @@
 Makefile
 mdview
 moc_*.cpp
+qrc_*.cpp

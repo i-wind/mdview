@@ -5,10 +5,11 @@ int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(mdview);
 
-    QApplication a(argc, argv);
+    QApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/images/preview.png"));
 
     MainWindow w;
     w.showMaximized();
 
-    return a.exec();
+    return app.exec();
 }

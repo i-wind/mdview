@@ -1,5 +1,6 @@
 <!DOCTYPE RCC><RCC version="1.0">
-<qresource prefix="/mdview" >
-    <file>markdown.css</file>
+<qresource prefix="/" >
+   <file>markdown.css</file>
+   <file>images/preview.png</file>
 </qresource>
 </RCC>

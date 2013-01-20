@@ -4,11 +4,10 @@
 #
 #-------------------------------------------------
 
-QT += core gui
+QT += core gui webkit
 
 TARGET = mdview
 TEMPLATE = app
-
 
 SOURCES += main.cpp\
         mainwindow.cpp

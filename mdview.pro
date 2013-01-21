@@ -1,17 +1,17 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-01-20T20:26:10
-#
-#-------------------------------------------------
 
-QT += core gui webkit
+QT        += core gui webkit
 
-TARGET = mdview
-TEMPLATE = app
+TARGET    = mdview
+TEMPLATE  = app
 
-SOURCES += main.cpp\
+MOC_DIR     = .obj
+OBJECTS_DIR = .obj
+RCC_DIR     = .obj
+
+SOURCES   += main.cpp \
         mainwindow.cpp
 
-HEADERS += mainwindow.h
+HEADERS   += mainwindow.h
 
 RESOURCES += mdview.qrc
+UI_DIR      = .obj

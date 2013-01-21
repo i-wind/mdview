@@ -5,7 +5,11 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
       m_fileName(fileName)
 {
-    //m_fileName = fileName;
+    createWidgets();
+}
+
+void MainWindow::createWidgets()
+{
     QSplitter* splitter = new QSplitter();
 
     m_edit = new QPlainTextEdit(this);
@@ -14,5 +18,13 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     splitter->addWidget(m_view);
 
     setCentralWidget(splitter);
+    setText();
     setWindowTitle("Markdown preview");
+}
+
+// Display markdown file in simple text view and convert it to html
+void MainWindow::setText()
+{
+    if (m_fileName.isEmpty()) return;
+    qDebug() << "setText: " << m_fileName;
 }

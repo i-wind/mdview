@@ -1,6 +1,5 @@
 #include <QtGui/QApplication>
 #include <QDir>
-#include <QDebug>
 #include "mainwindow.h"
 
 QString appendPath(const QString& path1, const QString& path2)
@@ -17,12 +16,11 @@ int main(int argc, char *argv[])
     qDebug() << QString(args.value(0));
 
     QString fileName = QString();
-    if (args.size()>1) {
+    if (argc>1)
         fileName = appendPath(QDir::currentPath(), args.value(1));
-        qDebug() << "Markdown file: " << fileName;
-    }
+
     qDebug() << "App path : " << qApp->applicationDirPath();
-    QDir dir; qDebug() << "Cur path : " << QDir::currentPath() << " ; " << dir.absolutePath();
+    QDir dir; qDebug() << "Cur path : " << QDir::currentPath() << "; " << dir.absolutePath();
 
     app.setWindowIcon(QIcon(":/images/preview.png"));
 

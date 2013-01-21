@@ -1,15 +1,17 @@
 #include <QtGui/QSplitter>
 #include "mainwindow.h"
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
+MainWindow::MainWindow(const QString &fileName, QWidget *parent)
+    : QMainWindow(parent),
+      m_fileName(fileName)
 {
+    //m_fileName = fileName;
     QSplitter* splitter = new QSplitter();
 
-    edit = new QPlainTextEdit(this);
-    splitter->addWidget(edit);
-    view = new QWebView(this);
-    splitter->addWidget(view);
+    m_edit = new QPlainTextEdit(this);
+    splitter->addWidget(m_edit);
+    m_view = new QWebView(this);
+    splitter->addWidget(m_view);
 
     setCentralWidget(splitter);
     setWindowTitle("Markdown preview");

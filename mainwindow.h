@@ -5,6 +5,7 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QPlainTextEdit>
 #include <QtWebKit/QWebView>
+#include <QTextCodec>
 #include <QDebug>
 
 class MainWindow : public QMainWindow

@@ -84,7 +84,9 @@ void MainWindow::setText()
     sd_markdown_free(markdown);
 
     /* writing the result to stdout */
-    ret = fwrite(ob->data, 1, ob->size, stdout);
+    //ret = fwrite(ob->data, 1, ob->size, stdout);
+    QString html = QString(reinterpret_cast<const char*>(ob->data)).toUtf8();
+    m_view->setHtml(html);
 
     /* cleanup */
     bufrelease(ib);

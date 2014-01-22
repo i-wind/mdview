@@ -1,17 +1,32 @@
 
-QT        += core gui webkit
+QT          += core gui webkit
 
-TARGET    = mdview
-TEMPLATE  = app
+TARGET      = mdview
+TEMPLATE    = app
 
 MOC_DIR     = .obj
 OBJECTS_DIR = .obj
 RCC_DIR     = .obj
-
-SOURCES   += main.cpp \
-        mainwindow.cpp
-
-HEADERS   += mainwindow.h
-
-RESOURCES += mdview.qrc
 UI_DIR      = .obj
+
+INCLUDEPATH += sundown html
+
+SOURCES     += main.cpp \
+    mainwindow.cpp \
+    sundown/markdown.c \
+    sundown/buffer.c \
+    sundown/autolink.c \
+    sundown/stack.c \
+    sundown/html.c \
+    sundown/houdini_html_e.c \
+    sundown/houdini_href_e.c
+
+HEADERS     += mainwindow.h \
+    sundown/markdown.h \
+    sundown/buffer.h \
+    sundown/autolink.h \
+    sundown/stack.h \
+    sundown/html.h \
+    sundown/houdini.h
+
+RESOURCES   += mdview.qrc

@@ -2,6 +2,10 @@
 #include <QMessageBox>
 #include "mainwindow.h"
 
+#include "markdown.h"
+#include "html.h"
+#include "buffer.h"
+
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
       m_fileName(fileName)

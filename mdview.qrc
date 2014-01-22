@@ -1,6 +1,13 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource prefix="/" >
-   <file>markdown.css</file>
-   <file>images/preview.png</file>
+    <file>markdown.css</file>
+
+    <file>images/back.png</file>
+    <file>images/forward.png</file>
+    <file>images/new.png</file>
+    <file>images/open.png</file>
+    <file>images/preview.png</file>
+    <file>images/refresh.png</file>
+    <file>images/save.png</file>
 </qresource>
 </RCC>

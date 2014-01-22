@@ -6,6 +6,9 @@
 #include "html.h"
 #include "buffer.h"
 
+#define READ_UNIT 1024
+#define OUTPUT_UNIT 64
+
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     : QMainWindow(parent),
       m_fileName(fileName)
@@ -31,7 +34,6 @@ void MainWindow::createWidgets()
 void MainWindow::setText()
 {
     if (m_fileName.isEmpty()) return;
-    qDebug() << "setText: " << m_fileName;
 
     QFile file(m_fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -50,4 +52,41 @@ void MainWindow::setText()
 #ifndef QT_NO_CURSOR
     QApplication::restoreOverrideCursor();
 #endif
+
+    struct buf *ib, *ob;
+    int ret;
+    FILE *fin = NULL;
+
+    struct sd_callbacks callbacks;
+    struct html_renderopt options;
+    struct sd_markdown *markdown;
+
+    fin = fopen(m_fileName.toAscii().data(), "r");
+
+    /* reading everything */
+    ib = bufnew(READ_UNIT);
+    bufgrow(ib, READ_UNIT);
+    while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, fin)) > 0) {
+        ib->size += ret;
+        bufgrow(ib, ib->size + READ_UNIT);
+    }
+
+    if (fin != stdin)
+        fclose(fin);
+
+    /* performing markdown parsing */
+    ob = bufnew(OUTPUT_UNIT);
+
+    sdhtml_renderer(&callbacks, &options, 0);
+    markdown = sd_markdown_new(0, 16, &callbacks, &options);
+
+    sd_markdown_render(ob, ib->data, ib->size, markdown);
+    sd_markdown_free(markdown);
+
+    /* writing the result to stdout */
+    ret = fwrite(ob->data, 1, ob->size, stdout);
+
+    /* cleanup */
+    bufrelease(ib);
+    bufrelease(ob);
 }

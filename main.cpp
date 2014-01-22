@@ -12,14 +12,10 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
     QStringList args = app.arguments();
-    qDebug() << QString(args.value(0));
 
     QString fileName = QString();
     if (argc>1)
         fileName = appendPath(QDir::currentPath(), args.value(1));
-
-    qDebug() << "App path : " << qApp->applicationDirPath();
-    QDir dir; qDebug() << "Cur path : " << QDir::currentPath() << "; " << dir.absolutePath();
 
     app.setWindowIcon(QIcon(":/images/preview.png"));
 

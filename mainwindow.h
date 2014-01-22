@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QtGui/QApplication>
 #include <QtGui/QMainWindow>
 #include <QtGui/QPlainTextEdit>
 #include <QtWebKit/QWebView>

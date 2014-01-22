@@ -1,4 +1,5 @@
 #include <QtGui/QSplitter>
+#include <QMessageBox>
 #include "mainwindow.h"
 
 MainWindow::MainWindow(const QString &fileName, QWidget *parent)
@@ -27,4 +28,22 @@ void MainWindow::setText()
 {
     if (m_fileName.isEmpty()) return;
     qDebug() << "setText: " << m_fileName;
+
+    QFile file(m_fileName);
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot read file %1:\n%2.")
+                             .arg(m_fileName)
+                             .arg(file.errorString()));
+        return;
+    }
+
+    QTextStream in(&file);
+#ifndef QT_NO_CURSOR
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+#endif
+    m_edit->setPlainText(in.readAll());
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
 }

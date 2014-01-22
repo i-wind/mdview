@@ -26,6 +26,9 @@ void MainWindow::createWidgets()
     splitter->addWidget(m_view);
 
     setCentralWidget(splitter);
+    //m_view->settings()->setUserStyleSheetUrl(QUrl("qrc:/markdown.css"));
+    //m_view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile("markdown.css"));
+    m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
     setText();
     setWindowTitle("Markdown preview");
 }

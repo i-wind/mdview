@@ -5,6 +5,10 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QPlainTextEdit>
 #include <QtWebKit/QWebView>
+#include <QMenuBar>
+#include <QToolBar>
+#include <QAction>
+#include <QStatusBar>
 #include <QTextCodec>
 #include <QDebug>
 
@@ -40,13 +44,28 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(const QString &fileName = QString(), QWidget *parent = 0);
 
+private slots:
+    void newFile();
+
 private:
     void createWidgets();
+    void createActions();
+    void createMenus();
+    void createToolBars();
+    void createStatusBar();
+
     void setText();
+    bool maybeSave();
+    void setCurrentFile(const QString &fileName);
 
     QPlainTextEdit* m_edit;
     QWebView* m_view;
     QString m_fileName;
+
+    QMenu *fileMenu;
+    QToolBar *fileToolBar;
+    QAction *newAct;
+    QAction *exitAct;
 };
 
 #endif // MAINWINDOW_H

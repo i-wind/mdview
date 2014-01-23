@@ -14,6 +14,18 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
       m_fileName(fileName)
 {
     createWidgets();
+    createActions();
+    createMenus();
+    createToolBars();
+    createStatusBar();
+}
+
+void MainWindow::newFile()
+{
+    if (maybeSave()) {
+        m_edit->clear();
+        setCurrentFile("");
+    }
 }
 
 void MainWindow::createWidgets()
@@ -31,6 +43,53 @@ void MainWindow::createWidgets()
     m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
     setText();
     setWindowTitle("Markdown preview");
+}
+
+void MainWindow::createActions()
+{
+    newAct = new QAction(QIcon(":/images/new.png"), tr("&New"), this);
+    newAct->setShortcuts(QKeySequence::New);
+    newAct->setStatusTip(tr("Create a new file"));
+    connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
+    /*
+    openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
+    openAct->setShortcuts(QKeySequence::Open);
+    openAct->setStatusTip(tr("Open an existing file"));
+    connect(openAct, SIGNAL(triggered()), this, SLOT(open()));
+
+    saveAct = new QAction(QIcon(":/images/save.png"), tr("&Save"), this);
+    saveAct->setShortcuts(QKeySequence::Save);
+    saveAct->setStatusTip(tr("Save the document to disk"));
+    connect(saveAct, SIGNAL(triggered()), this, SLOT(save()));
+
+    saveAsAct = new QAction(tr("Save &As..."), this);
+    saveAsAct->setShortcuts(QKeySequence::SaveAs);
+    saveAsAct->setStatusTip(tr("Save the document under a new name"));
+    connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
+    */
+    exitAct = new QAction(tr("E&xit"), this);
+    exitAct->setShortcuts(QKeySequence::Quit);
+    exitAct->setStatusTip(tr("Exit the application"));
+    connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+}
+
+void MainWindow::createMenus()
+{
+    fileMenu = menuBar()->addMenu(tr("&File"));
+    fileMenu->addAction(newAct);
+    fileMenu->addSeparator();
+    fileMenu->addAction(exitAct);
+}
+
+void MainWindow::createToolBars()
+{
+    fileToolBar = addToolBar(tr("File"));
+    fileToolBar->addAction(newAct);
+}
+
+void MainWindow::createStatusBar()
+{
+    statusBar()->showMessage(tr("Ready"));
 }
 
 // Display markdown file in simple text view and convert it to html
@@ -95,4 +154,33 @@ void MainWindow::setText()
     /* cleanup */
     bufrelease(ib);
     bufrelease(ob);
+}
+
+bool MainWindow::maybeSave()
+{
+    if (m_edit->document()->isModified()) {
+        QMessageBox::StandardButton ret;
+        ret = QMessageBox::warning(this, tr("Application"),
+                     tr("The document has been modified.\n"
+                        "Do you want to save your changes?"),
+                     QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
+        if (ret == QMessageBox::Save)
+            //return save();
+            return true;
+        else if (ret == QMessageBox::Cancel)
+            return false;
+    }
+    return true;
+}
+
+void MainWindow::setCurrentFile(const QString &fileName)
+{
+    m_fileName = fileName;
+    m_edit->document()->setModified(false);
+    setWindowModified(false);
+
+    QString shownName = m_fileName;
+    if (m_fileName.isEmpty())
+        shownName = "untitled.md";
+    setWindowFilePath(shownName);
 }

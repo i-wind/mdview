@@ -1,5 +1,6 @@
 #include <QtGui/QSplitter>
 #include <QMessageBox>
+#include <QFileDialog>
 #include "mainwindow.h"
 
 #include "markdown.h"
@@ -24,8 +25,44 @@ void MainWindow::newFile()
 {
     if (maybeSave()) {
         m_edit->clear();
+        m_view->setHtml("");
         setCurrentFile("");
     }
+}
+
+void MainWindow::open()
+{
+    if (maybeSave()) {
+        QString fileName = QFileDialog::getOpenFileName(this);
+        if (!fileName.isEmpty())
+            loadFile(fileName);
+    }
+}
+
+bool MainWindow::save()
+{
+    if (m_fileName.isEmpty()) {
+        return saveAs();
+    } else {
+        return saveFile(m_fileName);
+    }
+}
+
+bool MainWindow::saveAs()
+{
+    QString fileName = QFileDialog::getSaveFileName(this);
+    if (fileName.isEmpty())
+        return false;
+
+    return saveFile(fileName);
+}
+
+void MainWindow::about()
+{
+    QMessageBox::about(this, tr("About Application"),
+             tr("The <b>Markdown preview</b> application demonstrates how to "
+                "write modern GUI applications using Qt, with a menu bar, "
+                "toolbars, and a status bar."));
 }
 
 void MainWindow::createWidgets()
@@ -41,7 +78,8 @@ void MainWindow::createWidgets()
     //m_view->settings()->setUserStyleSheetUrl(QUrl("qrc:/markdown.css"));
     //m_view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile("markdown.css"));
     m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
-    setText();
+    if (!m_fileName.isEmpty())
+        loadFile(m_fileName);
     setWindowTitle("Markdown preview");
 }
 
@@ -51,7 +89,7 @@ void MainWindow::createActions()
     newAct->setShortcuts(QKeySequence::New);
     newAct->setStatusTip(tr("Create a new file"));
     connect(newAct, SIGNAL(triggered()), this, SLOT(newFile()));
-    /*
+
     openAct = new QAction(QIcon(":/images/open.png"), tr("&Open..."), this);
     openAct->setShortcuts(QKeySequence::Open);
     openAct->setStatusTip(tr("Open an existing file"));
@@ -66,25 +104,44 @@ void MainWindow::createActions()
     saveAsAct->setShortcuts(QKeySequence::SaveAs);
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
-    */
+
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
     connect(exitAct, SIGNAL(triggered()), this, SLOT(close()));
+
+    aboutAct = new QAction(tr("&About"), this);
+    aboutAct->setStatusTip(tr("Show the application's About box"));
+    connect(aboutAct, SIGNAL(triggered()), this, SLOT(about()));
+
+    aboutQtAct = new QAction(tr("About &Qt"), this);
+    aboutQtAct->setStatusTip(tr("Show the Qt library's About box"));
+    connect(aboutQtAct, SIGNAL(triggered()), qApp, SLOT(aboutQt()));
 }
 
 void MainWindow::createMenus()
 {
     fileMenu = menuBar()->addMenu(tr("&File"));
     fileMenu->addAction(newAct);
+    fileMenu->addAction(openAct);
+    fileMenu->addAction(saveAct);
+    fileMenu->addAction(saveAsAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
+
+    menuBar()->addSeparator();
+
+    helpMenu = menuBar()->addMenu(tr("&Help"));
+    helpMenu->addAction(aboutAct);
+    helpMenu->addAction(aboutQtAct);
 }
 
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
     fileToolBar->addAction(newAct);
+    fileToolBar->addAction(openAct);
+    fileToolBar->addAction(saveAct);
 }
 
 void MainWindow::createStatusBar()
@@ -93,15 +150,13 @@ void MainWindow::createStatusBar()
 }
 
 // Display markdown file in simple text view and convert it to html
-void MainWindow::setText()
+void MainWindow::loadFile(const QString &fileName)
 {
-    if (m_fileName.isEmpty()) return;
-
-    QFile file(m_fileName);
+    QFile file(fileName);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, tr("Application"),
                              tr("Cannot read file %1:\n%2.")
-                             .arg(m_fileName)
+                             .arg(fileName)
                              .arg(file.errorString()));
         return;
     }
@@ -111,9 +166,6 @@ void MainWindow::setText()
     QApplication::setOverrideCursor(Qt::WaitCursor);
 #endif
     m_edit->setPlainText(in.readAll());
-#ifndef QT_NO_CURSOR
-    QApplication::restoreOverrideCursor();
-#endif
 
     struct buf *ib, *ob;
     int ret;
@@ -123,7 +175,7 @@ void MainWindow::setText()
     struct html_renderopt options;
     struct sd_markdown *markdown;
 
-    fin = fopen(m_fileName.toAscii().data(), "r");
+    fin = fopen(fileName.toAscii().data(), "r");
 
     /* reading everything */
     ib = bufnew(READ_UNIT);
@@ -154,6 +206,37 @@ void MainWindow::setText()
     /* cleanup */
     bufrelease(ib);
     bufrelease(ob);
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
+
+    setCurrentFile(fileName);
+    statusBar()->showMessage(tr("File loaded"), 2000);
+}
+
+bool MainWindow::saveFile(const QString &fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QFile::WriteOnly | QFile::Text)) {
+        QMessageBox::warning(this, tr("Application"),
+                             tr("Cannot write file %1:\n%2.")
+                             .arg(fileName)
+                             .arg(file.errorString()));
+        return false;
+    }
+
+    QTextStream out(&file);
+#ifndef QT_NO_CURSOR
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+#endif
+    out << m_edit->toPlainText();
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
+
+    setCurrentFile(fileName);
+    statusBar()->showMessage(tr("File saved"), 2000);
+    return true;
 }
 
 bool MainWindow::maybeSave()

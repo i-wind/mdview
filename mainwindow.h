@@ -46,6 +46,10 @@ public:
 
 private slots:
     void newFile();
+    void open();
+    bool save();
+    bool saveAs();
+    void about();
 
 private:
     void createWidgets();
@@ -54,7 +58,8 @@ private:
     void createToolBars();
     void createStatusBar();
 
-    void setText();
+    void loadFile(const QString &fileName);
+    bool saveFile(const QString &fileName);
     bool maybeSave();
     void setCurrentFile(const QString &fileName);
 
@@ -63,9 +68,15 @@ private:
     QString m_fileName;
 
     QMenu *fileMenu;
+    QMenu *helpMenu;
     QToolBar *fileToolBar;
     QAction *newAct;
+    QAction *openAct;
+    QAction *saveAct;
+    QAction *saveAsAct;
     QAction *exitAct;
+    QAction *aboutAct;
+    QAction *aboutQtAct;
 };
 
 #endif // MAINWINDOW_H

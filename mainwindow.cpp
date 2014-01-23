@@ -67,8 +67,6 @@ void MainWindow::refresh()
     QByteArray data = text.toLocal8Bit();
 
     struct buf *ib, *ob;
-    int ret;
-
     struct sd_callbacks callbacks;
     struct html_renderopt options;
     struct sd_markdown *markdown;
@@ -87,7 +85,7 @@ void MainWindow::refresh()
     sd_markdown_free(markdown);
 
     /* writing the result to stdout */
-    ret = fwrite(ob->data, 1, ob->size, stdout);
+    fwrite(ob->data, 1, ob->size, stdout);
     QString html = QString::fromUtf8((const char*) ob->data, ob->size).toUtf8();
     m_view->setHtml(html);
 
@@ -101,7 +99,8 @@ void MainWindow::about()
     QMessageBox::about(this, tr("About Application"),
              tr("The <b>Markdown preview</b> application demonstrates how to "
                 "write modern GUI applications using Qt, with a menu bar, "
-                "toolbars, and a status bar."));
+                "toolbars, and a status bar."
+                "<br><br>version 0.1.0"));
 }
 
 void MainWindow::documentWasModified()

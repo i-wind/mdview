@@ -19,6 +19,9 @@ MainWindow::MainWindow(const QString &fileName, QWidget *parent)
     createMenus();
     createToolBars();
     createStatusBar();
+
+    connect(m_edit->document(), SIGNAL(contentsChanged()),
+            this, SLOT(documentWasModified()));
 }
 
 void MainWindow::newFile()
@@ -57,12 +60,53 @@ bool MainWindow::saveAs()
     return saveFile(fileName);
 }
 
+// Update the contents in the web viewer.
+void MainWindow::refresh()
+{
+    QString text = m_edit->toPlainText();
+    QByteArray data = text.toLocal8Bit();
+
+    struct buf *ib, *ob;
+    int ret;
+
+    struct sd_callbacks callbacks;
+    struct html_renderopt options;
+    struct sd_markdown *markdown;
+
+    /* reading everything */
+    ib = bufnew(128);
+    bufput(ib, (void*) data.data(), data.size());
+
+    /* performing markdown parsing */
+    ob = bufnew(OUTPUT_UNIT);
+
+    sdhtml_renderer(&callbacks, &options, 0);
+    markdown = sd_markdown_new(0, 16, &callbacks, &options);
+
+    sd_markdown_render(ob, ib->data, ib->size, markdown);
+    sd_markdown_free(markdown);
+
+    /* writing the result to stdout */
+    ret = fwrite(ob->data, 1, ob->size, stdout);
+    QString html = QString::fromUtf8((const char*) ob->data, ob->size).toUtf8();
+    m_view->setHtml(html);
+
+    /* cleanup */
+    bufrelease(ib);
+    bufrelease(ob);
+}
+
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Application"),
              tr("The <b>Markdown preview</b> application demonstrates how to "
                 "write modern GUI applications using Qt, with a menu bar, "
                 "toolbars, and a status bar."));
+}
+
+void MainWindow::documentWasModified()
+{
+    setWindowModified(m_edit->document()->isModified());
 }
 
 void MainWindow::createWidgets()
@@ -80,7 +124,7 @@ void MainWindow::createWidgets()
     m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
     if (!m_fileName.isEmpty())
         loadFile(m_fileName);
-    setWindowTitle("Markdown preview");
+    setWindowTitle("Markdown preview [*]");
 }
 
 void MainWindow::createActions()
@@ -105,6 +149,11 @@ void MainWindow::createActions()
     saveAsAct->setStatusTip(tr("Save the document under a new name"));
     connect(saveAsAct, SIGNAL(triggered()), this, SLOT(saveAs()));
 
+    refreshAct = new QAction(QIcon(":/images/refresh.png"), tr("&Refresh"), this);
+    refreshAct->setShortcuts(QKeySequence::Refresh);
+    refreshAct->setStatusTip(tr("Refresh html preview of the current markdown text"));
+    connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
+
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
@@ -127,6 +176,8 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAct);
     fileMenu->addAction(saveAsAct);
     fileMenu->addSeparator();
+    fileMenu->addAction(refreshAct);
+    fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
     menuBar()->addSeparator();
@@ -142,6 +193,7 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(newAct);
     fileToolBar->addAction(openAct);
     fileToolBar->addAction(saveAct);
+    fileToolBar->addAction(refreshAct);
 }
 
 void MainWindow::createStatusBar()

@@ -49,7 +49,9 @@ private slots:
     void open();
     bool save();
     bool saveAs();
+    void refresh();
     void about();
+    void documentWasModified();
 
 private:
     void createWidgets();
@@ -74,6 +76,7 @@ private:
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
+    QAction *refreshAct;
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;

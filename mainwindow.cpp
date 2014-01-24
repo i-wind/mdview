@@ -72,7 +72,7 @@ void MainWindow::refresh()
     struct sd_markdown *markdown;
 
     /* reading everything */
-    ib = bufnew(128);
+    ib = bufnew(READ_UNIT);
     bufput(ib, (void*) data.data(), data.size());
 
     /* performing markdown parsing */
@@ -92,6 +92,18 @@ void MainWindow::refresh()
     /* cleanup */
     bufrelease(ib);
     bufrelease(ob);
+}
+
+void MainWindow::back()
+{
+    QWebHistory* history = m_view->page()->history();
+    history->back();
+}
+
+void MainWindow::forward()
+{
+    QWebHistory* history = m_view->page()->history();
+    history->forward();
 }
 
 void MainWindow::about()
@@ -153,6 +165,16 @@ void MainWindow::createActions()
     refreshAct->setStatusTip(tr("Refresh html preview of the current markdown text"));
     connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
 
+    backAct = new QAction(QIcon(":/images/back.png"), tr("&Back"), this);
+    backAct->setShortcuts(QKeySequence::Back);
+    backAct->setStatusTip(tr("Back in the history"));
+    connect(backAct, SIGNAL(triggered()), this, SLOT(back()));
+
+    forwardAct = new QAction(QIcon(":/images/forward.png"), tr("&Forward"), this);
+    forwardAct->setShortcuts(QKeySequence::Forward);
+    forwardAct->setStatusTip(tr("Forward in the history"));
+    connect(forwardAct, SIGNAL(triggered()), this, SLOT(forward()));
+
     exitAct = new QAction(tr("E&xit"), this);
     exitAct->setShortcuts(QKeySequence::Quit);
     exitAct->setStatusTip(tr("Exit the application"));
@@ -179,6 +201,10 @@ void MainWindow::createMenus()
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 
+    webMenu = menuBar()->addMenu(tr("&History"));
+    webMenu->addAction(backAct);
+    webMenu->addAction(forwardAct);
+
     menuBar()->addSeparator();
 
     helpMenu = menuBar()->addMenu(tr("&Help"));
@@ -193,6 +219,10 @@ void MainWindow::createToolBars()
     fileToolBar->addAction(openAct);
     fileToolBar->addAction(saveAct);
     fileToolBar->addAction(refreshAct);
+
+    webToolBar = addToolBar(tr("History"));
+    webToolBar->addAction(backAct);
+    webToolBar->addAction(forwardAct);
 }
 
 void MainWindow::createStatusBar()

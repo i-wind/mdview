@@ -5,6 +5,7 @@
 #include <QtGui/QMainWindow>
 #include <QtGui/QPlainTextEdit>
 #include <QtWebKit/QWebView>
+#include <QtWebKit/QWebHistory>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QAction>
@@ -50,6 +51,8 @@ private slots:
     bool save();
     bool saveAs();
     void refresh();
+    void back();
+    void forward();
     void about();
     void documentWasModified();
 
@@ -70,13 +73,17 @@ private:
     QString m_fileName;
 
     QMenu *fileMenu;
+    QMenu *webMenu;
     QMenu *helpMenu;
     QToolBar *fileToolBar;
+    QToolBar *webToolBar;
     QAction *newAct;
     QAction *openAct;
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *refreshAct;
+    QAction *backAct;
+    QAction *forwardAct;
     QAction *exitAct;
     QAction *aboutAct;
     QAction *aboutQtAct;

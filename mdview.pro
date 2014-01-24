@@ -9,10 +9,10 @@ OBJECTS_DIR = .obj
 RCC_DIR     = .obj
 UI_DIR      = .obj
 
-INCLUDEPATH += sundown html
+INCLUDEPATH += src sundown
 
-SOURCES     += main.cpp \
-    mainwindow.cpp \
+SOURCES     += src/mdview.cpp \
+    src/mainwindow.cpp \
     sundown/markdown.c \
     sundown/buffer.c \
     sundown/autolink.c \
@@ -21,7 +21,7 @@ SOURCES     += main.cpp \
     sundown/houdini_html_e.c \
     sundown/houdini_href_e.c
 
-HEADERS     += mainwindow.h \
+HEADERS     += src/mainwindow.h \
     sundown/markdown.h \
     sundown/buffer.h \
     sundown/autolink.h \

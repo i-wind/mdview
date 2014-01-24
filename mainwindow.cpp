@@ -63,6 +63,9 @@ bool MainWindow::saveAs()
 // Update the contents in the web viewer.
 void MainWindow::refresh()
 {
+#ifndef QT_NO_CURSOR
+    QApplication::setOverrideCursor(Qt::WaitCursor);
+#endif
     QString text = m_edit->toPlainText();
     QByteArray data = text.toLocal8Bit();
 
@@ -86,24 +89,30 @@ void MainWindow::refresh()
 
     /* writing the result to stdout */
     fwrite(ob->data, 1, ob->size, stdout);
-    QString html = QString::fromUtf8((const char*) ob->data, ob->size).toUtf8();
+    QString html = QString::fromUtf8(reinterpret_cast<const char*>(ob->data), ob->size).toUtf8();
     m_view->setHtml(html);
 
     /* cleanup */
     bufrelease(ib);
     bufrelease(ob);
+#ifndef QT_NO_CURSOR
+    QApplication::restoreOverrideCursor();
+#endif
+    statusBar()->showMessage(tr("View refreshed"), 2000);
 }
 
 void MainWindow::back()
 {
     QWebHistory* history = m_view->page()->history();
-    history->back();
+    if (history->canGoBack())
+        history->back();
 }
 
 void MainWindow::forward()
 {
     QWebHistory* history = m_view->page()->history();
-    history->forward();
+    if (history->canGoForward())
+        history->forward();
 }
 
 void MainWindow::about()
@@ -280,8 +289,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     /* writing the result to stdout */
     ret = fwrite(ob->data, 1, ob->size, stdout);
-    //QString html = QString(reinterpret_cast<const char*>(ob->data)).toUtf8();
-    QString html = QString::fromUtf8((const char*) ob->data, ob->size).toUtf8();
+    QString html = QString::fromUtf8(reinterpret_cast<const char*>(ob->data), ob->size).toUtf8();
     m_view->setHtml(html);
 
     /* cleanup */

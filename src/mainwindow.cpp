@@ -1,6 +1,7 @@
 #include <QtGui/QSplitter>
 #include <QMessageBox>
 #include <QFileDialog>
+#include <QSettings>
 #include "mainwindow.h"
 
 #include "markdown.h"
@@ -76,7 +77,7 @@ void MainWindow::refresh()
 
     /* reading everything */
     ib = bufnew(READ_UNIT);
-    bufput(ib, (void*) data.data(), data.size());
+    bufput(ib, (void *) data.data(), data.size());
 
     /* performing markdown parsing */
     ob = bufnew(OUTPUT_UNIT);
@@ -89,7 +90,7 @@ void MainWindow::refresh()
 
     /* writing the result to stdout */
     fwrite(ob->data, 1, ob->size, stdout);
-    QString html = QString::fromUtf8(reinterpret_cast<const char*>(ob->data), ob->size).toUtf8();
+    QString html = QString::fromUtf8(reinterpret_cast<const char *>(ob->data), ob->size).toUtf8();
     m_view->setHtml(html);
 
     /* cleanup */
@@ -103,14 +104,14 @@ void MainWindow::refresh()
 
 void MainWindow::back()
 {
-    QWebHistory* history = m_view->page()->history();
+    QWebHistory *history = m_view->page()->history();
     if (history->canGoBack())
         history->back();
 }
 
 void MainWindow::forward()
 {
-    QWebHistory* history = m_view->page()->history();
+    QWebHistory *history = m_view->page()->history();
     if (history->canGoForward())
         history->forward();
 }
@@ -121,7 +122,7 @@ void MainWindow::about()
              tr("The <b>Markdown preview</b> application demonstrates how to "
                 "write modern GUI applications using Qt, with a menu bar, "
                 "toolbars, and a status bar."
-                "<br><br>version 0.1.0"));
+                "<br><br>version 0.1.1"));
 }
 
 void MainWindow::documentWasModified()
@@ -129,9 +130,15 @@ void MainWindow::documentWasModified()
     setWindowModified(m_edit->document()->isModified());
 }
 
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    writeSettings();
+    event->accept();
+}
+
 void MainWindow::createWidgets()
 {
-    QSplitter* splitter = new QSplitter();
+    QSplitter *splitter = new QSplitter();
 
     m_edit = new QPlainTextEdit(this);
     splitter->addWidget(m_edit);
@@ -144,7 +151,8 @@ void MainWindow::createWidgets()
     m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
     if (!m_fileName.isEmpty())
         loadFile(m_fileName);
-    setWindowTitle("Markdown preview [*]");
+    setWindowTitle(tr("Markdown preview [*]"));
+    readSettings();
 }
 
 void MainWindow::createActions()
@@ -224,12 +232,14 @@ void MainWindow::createMenus()
 void MainWindow::createToolBars()
 {
     fileToolBar = addToolBar(tr("File"));
+    fileToolBar->setObjectName("File");
     fileToolBar->addAction(newAct);
     fileToolBar->addAction(openAct);
     fileToolBar->addAction(saveAct);
     fileToolBar->addAction(refreshAct);
 
     webToolBar = addToolBar(tr("History"));
+    webToolBar->setObjectName("History");
     webToolBar->addAction(backAct);
     webToolBar->addAction(forwardAct);
 }
@@ -289,7 +299,7 @@ void MainWindow::loadFile(const QString &fileName)
 
     /* writing the result to stdout */
     ret = fwrite(ob->data, 1, ob->size, stdout);
-    QString html = QString::fromUtf8(reinterpret_cast<const char*>(ob->data), ob->size).toUtf8();
+    QString html = QString::fromUtf8(reinterpret_cast<const char *>(ob->data), ob->size).toUtf8();
     m_view->setHtml(html);
 
     /* cleanup */
@@ -355,4 +365,18 @@ void MainWindow::setCurrentFile(const QString &fileName)
     if (m_fileName.isEmpty())
         shownName = "untitled.md";
     setWindowFilePath(shownName);
+}
+
+void MainWindow::readSettings()
+{
+    QSettings settings("mdview", "mainwindow");
+    restoreGeometry(settings.value("geometry", saveGeometry()).toByteArray());
+    restoreState(settings.value("savestate", saveState()).toByteArray());
+}
+
+void MainWindow::writeSettings()
+{
+    QSettings settings("mdview", "mainwindow");
+    settings.setValue("geometry", saveGeometry());
+    settings.setValue("savestate", saveState());
 }

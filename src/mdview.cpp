@@ -12,8 +12,11 @@ int main(int argc, char *argv[])
 
     QApplication app(argc, argv);
 
-    //QTextCodec::setCodecForTr(QTextCodec::codecForName("utf8"));
+    QCoreApplication::setApplicationName("mdview");
+    QCoreApplication::setApplicationVersion("0.1.1");
+
     QTextCodec* codec = QTextCodec::codecForName("utf8");
+    QTextCodec::setCodecForTr(codec);
     QTextCodec::setCodecForCStrings(codec);
 
     QStringList args = app.arguments();

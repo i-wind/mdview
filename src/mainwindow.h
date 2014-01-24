@@ -56,6 +56,9 @@ private slots:
     void about();
     void documentWasModified();
 
+protected:
+    void closeEvent(QCloseEvent *event);
+
 private:
     void createWidgets();
     void createActions();
@@ -67,9 +70,12 @@ private:
     bool saveFile(const QString &fileName);
     bool maybeSave();
     void setCurrentFile(const QString &fileName);
+    void readSettings();
+    void writeSettings();
 
-    QPlainTextEdit* m_edit;
-    QWebView* m_view;
+private:
+    QPlainTextEdit *m_edit;
+    QWebView *m_view;
     QString m_fileName;
 
     QMenu *fileMenu;

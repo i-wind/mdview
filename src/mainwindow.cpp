@@ -146,8 +146,24 @@ void MainWindow::createWidgets()
     splitter->addWidget(m_view);
 
     setCentralWidget(splitter);
+
     //m_view->settings()->setUserStyleSheetUrl(QUrl("qrc:/markdown.css"));
     //m_view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile("markdown.css"));
+
+    //qDebug() << "App path : " << qApp->applicationDirPath();
+    QFile file(pathAppend(qApp->applicationDirPath(), "/style/markdown.css"));
+    if(!file.open(QIODevice::ReadOnly)) {
+        QMessageBox::information(0, "error", file.errorString());
+    }
+    QTextStream in(&file);
+
+    QString data;
+    data.append(in.readAll());
+
+    file.close();
+
+    QByteArray css = data.toUtf8() ;
+
     m_view->settings()->setUserStyleSheetUrl(QUrl("data:text/css;charset=utf-8;base64," + css.toBase64()));
     if (!m_fileName.isEmpty())
         loadFile(m_fileName);
@@ -379,4 +395,9 @@ void MainWindow::writeSettings()
     QSettings settings("mdview", "mainwindow");
     settings.setValue("geometry", saveGeometry());
     settings.setValue("savestate", saveState());
+}
+
+QString MainWindow::pathAppend(const QString &path1, const QString &path2)
+{
+    return QDir::cleanPath(path1 + QDir::separator() + path2);
 }

@@ -119,10 +119,8 @@ void MainWindow::forward()
 void MainWindow::about()
 {
     QMessageBox::about(this, tr("About Application"),
-             tr("The <b>Markdown preview</b> application demonstrates how to "
-                "write modern GUI applications using Qt, with a menu bar, "
-                "toolbars, and a status bar."
-                "<br><br>version 0.1.1"));
+             tr("Simple <b>Markdown preview</b> application."
+                "<br><br>version 0.1.2"));
 }
 
 void MainWindow::documentWasModified()

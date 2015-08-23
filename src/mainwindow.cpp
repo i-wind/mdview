@@ -102,6 +102,14 @@ void MainWindow::refresh()
     statusBar()->showMessage(tr("View refreshed"), 2000);
 }
 
+void MainWindow::display()
+{
+    if (m_dock->isHidden())
+        m_dock->show();
+    else
+        m_dock->hide();
+}
+
 void MainWindow::back()
 {
     QWebHistory *history = m_view->page()->history();
@@ -136,14 +144,14 @@ void MainWindow::closeEvent(QCloseEvent *event)
 
 void MainWindow::createWidgets()
 {
-    QSplitter *splitter = new QSplitter();
-
     m_edit = new QPlainTextEdit(this);
-    splitter->addWidget(m_edit);
-    m_view = new QWebView(this);
-    splitter->addWidget(m_view);
+    m_dock = new QDockWidget(tr("Markdown source"), this);
+    m_dock->setObjectName(tr("Markdown source"));
+    m_dock->setWidget(m_edit);
 
-    setCentralWidget(splitter);
+    m_view = new QWebView(this);
+    setCentralWidget(m_view);
+    addDockWidget(Qt::LeftDockWidgetArea, m_dock);
 
     //m_view->settings()->setUserStyleSheetUrl(QUrl("qrc:/markdown.css"));
     //m_view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile("markdown.css"));
@@ -196,6 +204,10 @@ void MainWindow::createActions()
     refreshAct->setStatusTip(tr("Refresh html preview of the current markdown text"));
     connect(refreshAct, SIGNAL(triggered()), this, SLOT(refresh()));
 
+    displayAct = new QAction(tr("Source"), this);
+    displayAct->setStatusTip(tr("Show/hide markdown source"));
+    connect(displayAct, SIGNAL(triggered()), this, SLOT(display()));
+
     backAct = new QAction(QIcon(":/images/back.png"), tr("&Back"), this);
     backAct->setShortcuts(QKeySequence::Back);
     backAct->setStatusTip(tr("Back in the history"));
@@ -229,6 +241,8 @@ void MainWindow::createMenus()
     fileMenu->addAction(saveAsAct);
     fileMenu->addSeparator();
     fileMenu->addAction(refreshAct);
+    fileMenu->addSeparator();
+    fileMenu->addAction(displayAct);
     fileMenu->addSeparator();
     fileMenu->addAction(exitAct);
 

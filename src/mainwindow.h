@@ -10,6 +10,7 @@
 #include <QToolBar>
 #include <QAction>
 #include <QStatusBar>
+#include <QDockWidget>
 #include <QTextCodec>
 #include <QDebug>
 
@@ -26,6 +27,7 @@ private slots:
     bool save();
     bool saveAs();
     void refresh();
+    void display();
     void back();
     void forward();
     void about();
@@ -52,6 +54,7 @@ private:
 
 private:
     QPlainTextEdit *m_edit;
+    QDockWidget *m_dock;
     QWebView *m_view;
     QString m_fileName;
 
@@ -65,6 +68,7 @@ private:
     QAction *saveAct;
     QAction *saveAsAct;
     QAction *refreshAct;
+    QAction *displayAct;
     QAction *backAct;
     QAction *forwardAct;
     QAction *exitAct;

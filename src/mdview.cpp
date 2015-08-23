@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     QCoreApplication::setApplicationName("mdview");
-    QCoreApplication::setApplicationVersion("0.1.1");
+    QCoreApplication::setApplicationVersion("0.1.2");
 
     QTextCodec* codec = QTextCodec::codecForName("utf8");
     QTextCodec::setCodecForTr(codec);

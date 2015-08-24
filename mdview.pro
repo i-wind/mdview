@@ -19,7 +19,8 @@ SOURCES     += src/mdview.cpp \
     sundown/stack.c \
     sundown/html.c \
     sundown/houdini_html_e.c \
-    sundown/houdini_href_e.c
+    sundown/houdini_href_e.c \
+    src/utils.cpp
 
 HEADERS     += src/mainwindow.h \
     sundown/markdown.h \
@@ -27,6 +28,7 @@ HEADERS     += src/mainwindow.h \
     sundown/autolink.h \
     sundown/stack.h \
     sundown/html.h \
-    sundown/houdini.h
+    sundown/houdini.h \
+    src/utils.h
 
 RESOURCES   += mdview.qrc

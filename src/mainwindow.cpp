@@ -157,7 +157,7 @@ void MainWindow::createWidgets()
     //m_view->settings()->setUserStyleSheetUrl(QUrl::fromLocalFile("markdown.css"));
 
     //qDebug() << "App path : " << qApp->applicationDirPath();
-    QFile file(pathAppend(qApp->applicationDirPath(), "/style/markdown.css"));
+    QFile file(mdview::pathAppend(qApp->applicationDirPath(), "/style/markdown.css"));
     if(!file.open(QIODevice::ReadOnly)) {
         QMessageBox::information(0, "error", file.errorString());
     }
@@ -407,9 +407,4 @@ void MainWindow::writeSettings()
     QSettings settings("mdview", "mainwindow");
     settings.setValue("geometry", saveGeometry());
     settings.setValue("savestate", saveState());
-}
-
-QString MainWindow::pathAppend(const QString &path1, const QString &path2)
-{
-    return QDir::cleanPath(path1 + QDir::separator() + path2);
 }

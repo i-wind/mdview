@@ -14,6 +14,8 @@
 #include <QTextCodec>
 #include <QDebug>
 
+#include "utils.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -50,8 +52,6 @@ private:
     void readSettings();
     void writeSettings();
 
-    QString pathAppend(const QString &path1, const QString &path2);
-
 private:
     QPlainTextEdit *m_edit;
     QDockWidget *m_dock;
@@ -76,4 +76,4 @@ private:
     QAction *aboutQtAct;
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

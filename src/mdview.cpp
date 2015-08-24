@@ -1,11 +1,6 @@
 #include <QDir>
 #include "mainwindow.h"
 
-QString appendPath(const QString& path1, const QString& path2)
-{
-    return QDir::cleanPath(path1 + QDir::separator() + path2);
-}
-
 int main(int argc, char *argv[])
 {
     Q_INIT_RESOURCE(mdview);
@@ -23,7 +18,7 @@ int main(int argc, char *argv[])
 
     QString fileName = QString();
     if (argc>1)
-        fileName = appendPath(QDir::currentPath(), args.value(1));
+        fileName = mdview::pathAppend(QDir::currentPath(), args.value(1));
 
     app.setWindowIcon(QIcon(":/images/preview.png"));
 
